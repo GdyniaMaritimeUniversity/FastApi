@@ -29,7 +29,7 @@ def validate_alerts(alerts):
 
 @app.route('/api/data', methods=['POST'])
 def receive_data():
-    # --- WALIDACJA TOKENU ---
+    # --- WALIDACJA TOKENU ----
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return jsonify({"error": "Missing or invalid Authorization header"}), 401

@@ -32,7 +32,7 @@ res = requests.post("http://localhost:5000/api/data", json=data, headers=headers
 print("Status code:", res.status_code)
 print("Response text:", res.text)
 
-# tylko jeśli wiemy, że serwer zwraca JSON
+
 try:
     print("JSON:", res.json())
 except Exception as e:
