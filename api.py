@@ -58,5 +58,16 @@ def receive_data():
 
     return jsonify({"status": "ok", "data": data})
 
+@app.route('/api/data', methods=['GET'])
+def get_last_data():
+    # Pobierz ostatni element z listy Redis (indeks -1)
+    raw_data = r.lindex('sensor_data', -1)
+    
+    if raw_data is None:
+        return jsonify({"message": "No data available"}), 404
+
+    data = json.loads(raw_data)
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
