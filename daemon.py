@@ -75,6 +75,26 @@ def insert_sensor_data(conn, sensor_id, data):
         ))
         conn.commit()
 
+def insert_alerts_from_data(conn, sensor_id, data):
+    alerts = data.get("alerts", [])
+    if not alerts:
+        return
+
+    alert_time = datetime.fromisoformat(data["timestamp"])
+    alert_type = "external"  # Można zmienić na coś bardziej konkretnego, jeśli dane zawierają typ
+
+    with conn.cursor() as cursor:
+        for message in alerts:
+            cursor.execute("""
+                INSERT INTO sensor_alerts (sensor_id, alert_time, alert_type, message)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                sensor_id, alert_time, alert_type, message
+            ))
+    conn.commit()
+    print(f"🚨 Zapisano {len(alerts)} alert(ów) dla sensora {sensor_id}")
+
+
 def main():
     conn = connect_db()
     print("🟢 Daemon running. Waiting for sensor data from Redis...")
@@ -98,6 +118,9 @@ def main():
                 sensor_id = create_random_sensor(conn, mac)
 
             insert_sensor_data(conn, sensor_id, data)
+                
+            insert_alerts_from_data(conn, sensor_id, data)
+            
             print(f"✅ Dodano dane do bazy dla sensora {mac}")
 
         except Exception as e:
